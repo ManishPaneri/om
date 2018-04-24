@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/akrylysov/algnhsa"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/rs/cors"
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 	"log"
@@ -20,20 +20,12 @@ func init() {
 
 func main() {
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/product", handlers.ProductHandler)
+	http.HandleFunc("/product", handlers.ProductHandler)
 
-	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-	handler := cors.Default().Handler(mux)
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT"},
-		AllowCredentials: true,
-	})
 	// Insert the middleware
 	fmt.Println(cast.ToString(viper.Get("base_url")))
-	handler = c.Handler(handler)
-	http.ListenAndServe(":8080", handler)
+	algnhsa.ListenAndServe(http.DefaultServeMux, nil)
+
 }
 
 //function to register the database to beego orm
